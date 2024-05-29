@@ -19,17 +19,19 @@ class ModeloYoloNas:
     async def AnalyzeModel(self,request: Request):
         global model, device
         
-        # Obtener las clases desde la API
+        
         data = await request.json()
+        # Obtener las clases desde la API
         classes = get_classes(data['id_modelo'])
         #test=get_modelo(1)
         #test=get_modelo(data['id_modelo'])
 
         
-         #Obtener el nombre del modelo via API y devuelve el path del modelo
+        #Obtener el nombre del modelo via API y devuelve el path del modelo
         model_path = os.environ.get(get_modelo(data['id_modelo']))
         #print(model_path)
 
+        #Carga el modelo YOLO-NAS-M como parametros recibe las clases que llegan de API.
         model = models.get(
             'yolo_nas_m',
             pretrained_weights="coco",
@@ -42,7 +44,7 @@ class ModeloYoloNas:
         model = model.to(device)
         
         #Ruta para guardar la imagen 
-        file_name = Util.Download(os.environ.get('UPLOAD_FOLDER_POSTOBON'), data['url_image'])
+        file_name = Util.Download(os.environ.get('UPLOAD_FOLDER_IMAGENES'), data['url_image'])
         
         #Carga la imagen en un formato especifico
         image = cargar_imagen(file_name)
@@ -51,9 +53,9 @@ class ModeloYoloNas:
         prediction = prediccion(image)
    
             
-            # Mostrar conteo de clases detectadas
+        # Mostrar conteo de clases detectadas
         class_counts = mostrar_clases(prediction.prediction.labels, classes)
-        df_counts = pd.DataFrame(list(class_counts.items()), columns=['Producto', 'Cantidad'])
+        df_counts = pd.DataFrame(list(class_counts.items()), columns=['Clase', 'Cantidad'])
 
             
             # Mostrar detalle de la predicción
@@ -83,7 +85,7 @@ def formatear_prediccion(outputs, class_names):
                         # Asumimos que no hay puntuaciones de confianza disponibles.
             
                         data = [{
-                            'Producto': class_names[label],
+                            'Clase': class_names[label],
                             'x_min': round(bbox[0], 2),
                             'y_min': round(bbox[1], 2),
                             'x_max': round(bbox[2], 2),
