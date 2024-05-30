@@ -11,6 +11,9 @@ import cv2
 from super_gradients.training import models
 from load.model.get_etiquetas import get_classes
 from load.model.get_modelos import get_modelo
+from load.model.send_data import send_data_to_coordenadas
+from load.model.send_data import send_data_to_existing_api
+
 
 
 class ModeloYoloNas:
@@ -55,19 +58,40 @@ class ModeloYoloNas:
             
         # Mostrar conteo de clases detectadas
         class_counts = mostrar_clases(prediction.prediction.labels, classes)
-        df_counts = pd.DataFrame(list(class_counts.items()), columns=['Clase', 'Cantidad'])
+        df_counts = pd.DataFrame(list(class_counts.items()), columns=['classname', 'Cantidad'])
 
             
-            # Mostrar detalle de la predicción
+        # Mostrar detalle de la predicción
         df_prediccion = formatear_prediccion(prediction, classes)
 
         resultados = {
           "conteo_clases": df_counts.to_dict(orient="records"),
           "detalle_prediccion": df_prediccion.to_dict(orient="records")
           }
+        detalle_prediccion = resultados["detalle_prediccion"]
+        # Convertir el diccionario a JSON y devolverlo como respuesta
+        #return JSONResponse(content=resultados)
+        #detalle_prediccion = resultados["detalle_prediccion"]
+        #print(detalle_prediccion)
+        #return await send_data_to_existing_api(detalle_prediccion)
 
-            # Convertir el diccionario a JSON y devolverlo como respuesta
-        return JSONResponse(content=resultados)
+        response=JSONResponse(detalle_prediccion)
+         
+        data=ajustar_json(response)
+        return data
+    
+# Función para ajustar el JSON antes de enviarlo
+def ajustar_json(response):
+    print(f"Tipo de response: {type(response)}, Contenido de response: {response}")
+    
+    if response is None:
+        return None
+    
+    if isinstance(response, list) and len(response) == 1:
+        return response[0]  # Devuelve el objeto sin corchetes
+    
+    return response  # Devuelve el array completo o el objeto tal cual si no es una lista
+
             
             
 def prediccion(image):
@@ -85,11 +109,11 @@ def formatear_prediccion(outputs, class_names):
                         # Asumimos que no hay puntuaciones de confianza disponibles.
             
                         data = [{
-                            'Clase': class_names[label],
-                            'x_min': round(bbox[0], 2),
-                            'y_min': round(bbox[1], 2),
-                            'x_max': round(bbox[2], 2),
-                            'y_max': round(bbox[3], 2)
+                            'classname': class_names[label],
+                            'xMin': round(bbox[0], 2),
+                            'yMin': round(bbox[1], 2),
+                            'xMax': round(bbox[2], 2),
+                            'yMax': round(bbox[3], 2)
                         } for label, bbox in zip(labels, bboxes)]
                 
                         return pd.DataFrame(data)
