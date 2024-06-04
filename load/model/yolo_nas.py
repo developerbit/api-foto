@@ -13,6 +13,7 @@ from load.model.get_etiquetas import get_classes
 from load.model.get_modelos import get_modelo
 from load.model.send_data import send_data_to_coordenadas
 from load.model.send_data import send_data_to_existing_api
+import httpx
 
 
 
@@ -64,33 +65,33 @@ class ModeloYoloNas:
         # Mostrar detalle de la predicción
         df_prediccion = formatear_prediccion(prediction, classes)
 
-        resultados = {
-          "conteo_clases": df_counts.to_dict(orient="records"),
-          "detalle_prediccion": df_prediccion.to_dict(orient="records")
-          }
-        detalle_prediccion = resultados["detalle_prediccion"]
-        # Convertir el diccionario a JSON y devolverlo como respuesta
-        #return JSONResponse(content=resultados)
-        #detalle_prediccion = resultados["detalle_prediccion"]
-        #print(detalle_prediccion)
-        #return await send_data_to_existing_api(detalle_prediccion)
+        imageId = data['id_image']
 
-        response=JSONResponse(detalle_prediccion)
-         
-        data=ajustar_json(response)
-        return data
+        # Convertimos el DataFrame df_prediccion a una lista de diccionarios
+        detalle_prediccion = df_prediccion.to_dict(orient="records")
+
+        # Añadimos imageId a cada registro en detalle_prediccion
+        for registro in detalle_prediccion:
+            registro['imageId'] = imageId
+
+        # Creamos el diccionario de resultados  
+        resultados = {
+            "conteo_clases": df_counts.to_dict(orient="records"),
+            "detalle_prediccion": detalle_prediccion
+            }
+        detalle_prediccion = resultados["detalle_prediccion"]
+
+        
+        async with httpx.AsyncClient() as client:
+            external_response = await client.post(os.environ.get("API_URL_POST_COORDENADAS"), json=detalle_prediccion)
+
+
+        #response = JSONResponse(detalle_prediccion)
+        #await send_data_to_existing_api(response)
+        #return response
+        
     
-# Función para ajustar el JSON antes de enviarlo
-def ajustar_json(response):
-    print(f"Tipo de response: {type(response)}, Contenido de response: {response}")
-    
-    if response is None:
-        return None
-    
-    if isinstance(response, list) and len(response) == 1:
-        return response[0]  # Devuelve el objeto sin corchetes
-    
-    return response  # Devuelve el array completo o el objeto tal cual si no es una lista
+
 
             
             
@@ -109,6 +110,7 @@ def formatear_prediccion(outputs, class_names):
                         # Asumimos que no hay puntuaciones de confianza disponibles.
             
                         data = [{
+        
                             'classname': class_names[label],
                             'xMin': round(bbox[0], 2),
                             'yMin': round(bbox[1], 2),
