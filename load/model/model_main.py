@@ -12,3 +12,12 @@ class ModeloMain:
         except Exception as ex:
             error_message = getattr(ex, 'description', str(ex))
             return JSONResponse(content={"error": error_message}, status_code=500)
+        
+    async def Mision_test(self,request: Request):
+        
+        try:
+            return await ModeloYoloNas().AnalyzeModel_test(request)
+            #return "<h1>Estas en el endpoint Misiones </h1>"
+        except Exception as ex:
+            error_message = getattr(ex, 'description', str(ex))
+            return JSONResponse(content={"error": error_message}, status_code=500)    

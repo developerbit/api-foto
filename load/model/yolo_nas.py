@@ -89,6 +89,78 @@ class ModeloYoloNas:
         #response = JSONResponse(detalle_prediccion)
         #await send_data_to_existing_api(response)
         #return response
+
+
+
+    #MODULO DE TEST Y AMBIENTE QA
+    async def AnalyzeModel_test(self,request: Request):
+        global model, device
+        
+        
+        data = await request.json()
+        # Obtener las clases desde la API
+        classes = get_classes(data['id_modelo'])
+        #test=get_modelo(1)
+        #test=get_modelo(data['id_modelo'])
+
+        
+        #Obtener el nombre del modelo via API y devuelve el path del modelo
+        model_path = os.environ.get(get_modelo(data['id_modelo']))
+        #print(model_path)
+
+        #Carga el modelo YOLO-NAS-M como parametros recibe las clases que llegan de API.
+        model = models.get(
+            'yolo_nas_m',
+            pretrained_weights="coco",
+            num_classes=len(classes),
+            checkpoint_path=model_path
+        )
+ 
+        # Ahora mueve el modelo al dispositivo apropiado.
+        device = "mps" if torch.backends.mps.is_available() else "cpu"
+        model = model.to(device)
+        
+        #Ruta para guardar la imagen 
+        file_name = Util.Download(os.environ.get('UPLOAD_FOLDER_IMAGENES'), data['url_image'])
+        
+        #Carga la imagen en un formato especifico
+        image = cargar_imagen(file_name)
+        #print(image)    
+            
+        prediction = prediccion(image)
+   
+            
+        # Mostrar conteo de clases detectadas
+        class_counts = mostrar_clases(prediction.prediction.labels, classes)
+        df_counts = pd.DataFrame(list(class_counts.items()), columns=['classname', 'Cantidad'])
+
+            
+        # Mostrar detalle de la predicción
+        df_prediccion = formatear_prediccion(prediction, classes)
+
+        imageId = data['id_image']
+
+        # Convertimos el DataFrame df_prediccion a una lista de diccionarios
+        detalle_prediccion = df_prediccion.to_dict(orient="records")
+
+        # Añadimos imageId a cada registro en detalle_prediccion
+        for registro in detalle_prediccion:
+            registro['imageId'] = imageId
+
+        # Creamos el diccionario de resultados  
+        resultados = {
+            "conteo_clases": df_counts.to_dict(orient="records"),
+            "detalle_prediccion": detalle_prediccion
+            }
+        detalle_prediccion = resultados["detalle_prediccion"]
+
+        
+        #async with httpx.AsyncClient() as client:
+            #external_response = await client.post(os.environ.get("API_URL_POST_COORDENADAS"), json=detalle_prediccion)
+
+
+        response = JSONResponse(detalle_prediccion)
+        return response        
         
     
 
