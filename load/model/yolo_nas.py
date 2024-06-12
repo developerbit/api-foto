@@ -151,15 +151,18 @@ class ModeloYoloNas:
         resultados = {
             "conteo_clases": df_counts.to_dict(orient="records"),
             "detalle_prediccion": detalle_prediccion
+            
             }
+        
         detalle_prediccion = resultados["detalle_prediccion"]
 
         
-        #async with httpx.AsyncClient() as client:
-            #external_response = await client.post(os.environ.get("API_URL_POST_COORDENADAS"), json=detalle_prediccion)
-
-
+        #En caso de que no llegue los resultados de la foto 
+        imagen = {"image":imageId}
+        
         response = JSONResponse(detalle_prediccion)
+        if len(detalle_prediccion) == 0 :
+              return  JSONResponse(imagen) 
         return response        
         
     
