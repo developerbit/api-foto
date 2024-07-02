@@ -14,6 +14,7 @@ from load.model.get_modelos import get_modelo
 from load.model.send_data import send_data_to_coordenadas
 from load.model.send_data import send_data_to_existing_api
 import httpx
+import requests
 
 
 
@@ -65,30 +66,41 @@ class ModeloYoloNas:
         # Mostrar detalle de la predicción
         df_prediccion = formatear_prediccion(prediction, classes)
 
+        #Informacion del modelo
+        modelo = data['id_modelo']
+
+        # Aquí es donde deberías integrar la información de las etiquetas
+        etiquetas = data['etiquetas']
+ 
         imageId = data['id_image']
 
         # Convertimos el DataFrame df_prediccion a una lista de diccionarios
         detalle_prediccion = df_prediccion.to_dict(orient="records")
 
+
         # Añadimos imageId a cada registro en detalle_prediccion
         for registro in detalle_prediccion:
             registro['imageId'] = imageId
+            registro['id_modelo'] = modelo
+            registro['etiquetas'] = etiquetas
 
         # Creamos el diccionario de resultados  
         resultados = {
             "conteo_clases": df_counts.to_dict(orient="records"),
             "detalle_prediccion": detalle_prediccion
+            
             }
+        
         detalle_prediccion = resultados["detalle_prediccion"]
 
         
-        async with httpx.AsyncClient() as client:
-            external_response = await client.post(os.environ.get("API_URL_POST_COORDENADAS"), json=detalle_prediccion)
-
-
-        #response = JSONResponse(detalle_prediccion)
-        #await send_data_to_existing_api(response)
-        #return response
+        #En caso de que no llegue los resultados de la foto 
+        imagen = {"image":imageId}
+        
+        response = JSONResponse(detalle_prediccion)
+        if len(detalle_prediccion) == 0 :
+              return  JSONResponse(imagen) 
+        return response    
 
 
 
@@ -138,6 +150,12 @@ class ModeloYoloNas:
         # Mostrar detalle de la predicción
         df_prediccion = formatear_prediccion(prediction, classes)
 
+        #Informacion del modelo
+        modelo = data['id_modelo']
+
+        # Aquí es donde deberías integrar la información de las etiquetas
+        etiquetas = data['etiquetas']
+ 
         imageId = data['id_image']
 
         # Convertimos el DataFrame df_prediccion a una lista de diccionarios
@@ -146,6 +164,9 @@ class ModeloYoloNas:
         # Añadimos imageId a cada registro en detalle_prediccion
         for registro in detalle_prediccion:
             registro['imageId'] = imageId
+            registro['id_modelo'] = modelo
+            registro['etiquetas'] = etiquetas
+           
 
         # Creamos el diccionario de resultados  
         resultados = {
