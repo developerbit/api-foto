@@ -107,7 +107,7 @@ class ModeloYoloNas:
         # En caso de que no llogue ningûn veredicto
 
         if len(veredictos) == 0:
-            return JSONResponse({"image": imageId})
+            return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
         
         return JSONResponse(resultados)
         
@@ -202,7 +202,7 @@ class ModeloYoloNas:
         # En caso de que no llogue ningûn veredicto
 
         if len(veredictos) == 0:
-            return JSONResponse({"image": imageId})
+            return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
         
         return JSONResponse(resultados)
         
