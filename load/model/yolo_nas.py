@@ -157,34 +157,63 @@ class ModeloYoloNas:
         etiquetas = data['etiquetas']
  
         imageId = data['id_image']
+        telefono = data['telefono']
 
         # Convertimos el DataFrame df_prediccion a una lista de diccionarios
         detalle_prediccion = df_prediccion.to_dict(orient="records")
 
+        veredictos = []
         # Añadimos imageId a cada registro en detalle_prediccion
         for registro in detalle_prediccion:
-            registro['imageId'] = imageId
-            registro['id_modelo'] = modelo
-            registro['etiquetas'] = etiquetas
+            veredicto = {
+                "imageId": imageId,
+                "classname": registro["classname"],
+                "yMin": registro["yMin"],
+                "xMin": registro["xMin"],
+                "yMax": registro["yMax"],
+                "xMax": registro["xMax"],
+            }
+            veredictos.append(veredicto)
+
+        #crear la lôgica para el veredicto basado en etiquetas 
+        logica = [{
+            "id_modelo": modelo,
+            "etiquetas": etiquetas
+        }]
+        
+        #   crear el diccionario de resultados
+        resultados = {
+            "imageId": imageId,
+            "telefono": telefono,
+            "veredictos": veredictos,
+            "logica": logica,
+        }
            
+        # En caso de que no llogue ningûn veredicto
+
+        if len(veredictos) == 0:
+            return JSONResponse({"image": imageId})
+        
+        return JSONResponse(resultados)
+        
 
         # Creamos el diccionario de resultados  
-        resultados = {
-            "conteo_clases": df_counts.to_dict(orient="records"),
-            "detalle_prediccion": detalle_prediccion
-            
-            }
-        
-        detalle_prediccion = resultados["detalle_prediccion"]
+#        resultados = {
+#            "conteo_clases": df_counts.to_dict(orient="records"),
+#            "detalle_prediccion": detalle_prediccion
+#            
+#            }
+#        
+#        detalle_prediccion = resultados["detalle_prediccion"]
 
         
         #En caso de que no llegue los resultados de la foto 
-        imagen = {"image":imageId}
+#        imagen = {"image":imageId}
         
-        response = JSONResponse(detalle_prediccion)
-        if len(detalle_prediccion) == 0 :
-              return  JSONResponse(imagen) 
-        return response        
+#        response = JSONResponse(detalle_prediccion)
+#        if len(detalle_prediccion) == 0 :
+#              return  JSONResponse(imagen) 
+#        return response        
         
     
 
