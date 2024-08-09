@@ -155,7 +155,7 @@ class ModeloYoloNas:
 
         # Aquí es donde deberías integrar la información de las etiquetas
         etiquetas = data['etiquetas']
- 
+        imageUrl = data['url_image']
         imageId = data['id_image']
         telefono = data['telefono']
 
@@ -184,6 +184,7 @@ class ModeloYoloNas:
         #   crear el diccionario de resultados
         resultados = {
             "imageId": imageId,
+            "url_image": imageUrl,
             "telefono": telefono,
             "veredictos": veredictos,
             "logica": logica,
