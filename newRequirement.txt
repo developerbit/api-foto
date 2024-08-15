@@ -1,4 +1,3 @@
--Victus-by-HP-Gaming-Laptop-15-fa0xxx  ~/Documents/api-foto  julian.dev  pip  freeze new_requeriment.txt
 alembic==1.13.1
 annotated-types==0.7.0
 anyio==4.4.0
