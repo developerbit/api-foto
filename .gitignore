@@ -8,6 +8,7 @@ __pycache__/
 # Ignorar el archivo modelo_pth/Azulk/AZULK.pth
 modelo_pth/
 imagenes_temp/
+start.sh
 
 # Distribution / packaging
 .Python
