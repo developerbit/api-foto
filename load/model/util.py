@@ -31,8 +31,12 @@ class Util():
     def Download(path, url_image):
         url_image = unquote(url_image)  # Convertir caracteres especiales
         file_name, ext = os.path.splitext(os.path.basename(urlsplit(url_image).path))
+        file_name = file_name.replace('.', '_')
+        file_name = file_name.replace(':', '_')
         path_img = os.path.join(path, file_name + '.png')
+    
         response = requests.get(url_image)
+        
         with open(path_img, 'wb') as img:
             img.write(response.content)
         return path_img
