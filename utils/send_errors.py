@@ -18,7 +18,22 @@ def send_errors(message,status_code,filename,line):
     '''
     # Obtener la URL del endpoint de la API desde las variables de entorno
     api_url_logs = os.getenv("API_URL_LOGS")
-    app = os.getenv("APP_NAME")
-    data = {"message": message, "statusCode": status_code, "filename":filename, "app": app}
+    app = os.getenv("APP_NOMBRE")
+    data = {"message": message, "statusCode": status_code, "filename":filename, "app": app, "line":line}
+
     response = requests.post(api_url_logs,data)
-    # Hacer la solicitud HTTP usando requests
+    if response.status_code == 200:
+        
+        # Decodificamos la respuesta JSON
+        data = response.json()
+
+        return data
+        #return response.json()
+            #otro3
+        #data = response.json()
+        #return data['nombre']
+    else:
+        # Manejar el caso en que la solicitud falle
+        print("Error al obtener las clases desde la API:", response.status_code)
+        return data
+# Hacer la solicitud HTTP usando requests
