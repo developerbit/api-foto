@@ -1,14 +1,13 @@
-import os
 import requests
 from dotenv import load_dotenv
-
+from load.services.env_service import get_enviroment
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
 def get_classes(id_etiquetas):
         # Obtener la URL del endpoint de la API desde las variables de entorno
-        api_url_etiquetas = os.getenv("API_URL_ETIQUETAS")
+        api_url_etiquetas = get_enviroment("API_URL_ETIQUETAS")
        
         # Concatenar el parámetro id_etiquetas a la URL del endpoint
         url_id = f"{api_url_etiquetas}/{id_etiquetas}"
