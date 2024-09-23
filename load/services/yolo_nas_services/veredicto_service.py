@@ -32,4 +32,4 @@ class VeredictoService:
             }
             return veredictos,  resultados
         except KeyError as e:
-            return send_errors(str(e),500, 'prediction_service', 18)
+            return send_errors(str(e),500, 'veredicto_service', 18)
