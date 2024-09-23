@@ -95,4 +95,5 @@ class ModeloYoloNas:
             return JSONResponse(resultados)
 
         except KeyError as e:
-            return send_errors(str(e),500, 'yolo_nas_test', 18)
+            send_errors(str(e),500, 'yolo_nas_test', 18)
+            return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
