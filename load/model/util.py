@@ -3,6 +3,7 @@ import os
 import sys
 from urllib.parse import urlsplit
 from urllib.parse import unquote
+from  utils.send_errors import send_errors    
 #from load.table.marca.view import MarcaView
 import requests
 
@@ -29,17 +30,24 @@ class Util():
     
 
     def Download(path, url_image):
-        url_image = unquote(url_image)  # Convertir caracteres especiales
-        file_name, ext = os.path.splitext(os.path.basename(urlsplit(url_image).path))
-        file_name = file_name.replace('.', '_')
-        file_name = file_name.replace(':', '_')
-        path_img = os.path.join(path, file_name + '.png')
-    
-        response = requests.get(url_image)
+        try:
+            url_image = unquote(url_image)  # Convertir caracteres especiales
+            # return url_image
+            file_name, ext = os.path.splitext(os.path.basename(urlsplit(url_image).path))
+            # return file_name
+            file_name = file_name.replace('.', '_')
+            file_name = file_name.replace(':', '_')
+            # return file_name
+            path_img = os.path.join(path, file_name + '.png')
+            # return path_img
         
-        with open(path_img, 'wb') as img:
-            img.write(response.content)
-        return path_img
+            response = requests.get(url_image)
+    
+            with open(path_img, 'wb') as img:
+                img.write(response.content)
+            return path_img
+        except KeyError as e:
+            return send_errors(str(e),500, 'process_image', 13)
 
 
 
