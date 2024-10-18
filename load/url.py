@@ -18,12 +18,12 @@ def auth():
 
 @router.post("/ia/mision")
 async def Reconocimiento(request: Request):
-     return await ModeloMain().Mision(request)
+    return await ModeloMain().Mision(request)
 
 
 @router.post("/ia/mision/test")
 async def Reconocimiento_test(request: Request):
-     return await ModeloMain().Mision_test(request)
+    return await ModeloMain().Mision_test(request)
 # Define el resto de tus rutas aquí...
 
 def configure_routes(app):
