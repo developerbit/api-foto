@@ -1,0 +1,17 @@
+
+    <!DOCTYPE html>
+    <html lang=en>
+    <meta charset=UTF-8>
+    <meta content="IE=edge"http-equiv=X-UA-Compatible>
+    <meta content="width=device-width,initial-scale=1"name=viewport>
+    <link rel="icon" href="https://hub.ultralytics.com/favicon.ico" />
+    <title>Ultralytics HUB</title>
+    <style>body{background:#1d2026;color:#fff;font-family:Poppins,sans-serif;padding:0; margin:0;height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;}a{color:#fff;}</style>
+    </head>
+    <body>
+    <img data-v-3aa12d0c="" src="https://hub.ultralytics.com/static/logos/ultralytics/hub-logotype.svg" alt="Ultralytics Logo" width="400">
+    <h1>API</h1><h3>1.1.32</h3><h2>Unknown</h2>
+    <a href="#coming-soon">Documentation</a>
+    </body>
+    </html>
+    
