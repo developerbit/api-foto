@@ -7,8 +7,10 @@ class ModelService:
     def __init__(self):
         self.model_paths = {
             3: os.getenv('YUPI'),
+            4: os.getenv('AZULK'),
             5: os.getenv('RAMO'),
             9: os.getenv('KOALA')
+            
         }
         self.models = {}
 
