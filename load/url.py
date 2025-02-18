@@ -1,6 +1,7 @@
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi import APIRouter,Request
 from load.model.model_main import ModeloMain
+# from load.model.index import Index
 #from load.seasons.postobon.main import PostobonMain
 #from load.auth.main import AuthMain
 
@@ -20,6 +21,9 @@ def auth():
 async def Reconocimiento(request: Request):
     return await ModeloMain().Mision(request)
 
+@router.post("/mision")
+async def Recognize(request: Request):
+    return await ModeloMain().Mision(request)
 
 @router.post("/ia/mision/test")
 async def Reconocimiento_test(request: Request):

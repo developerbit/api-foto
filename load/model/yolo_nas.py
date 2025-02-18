@@ -13,6 +13,7 @@ class ModeloYoloNas:
             global model, device
 
             data = await request.json()
+            # return 'hola'
 
             # extrayendo data del JSON
             id_modelo = data['id_modelo']
@@ -21,9 +22,11 @@ class ModeloYoloNas:
             imageUrl = data['url_image']
             imageId = data['id_image']
             telefono = data['telefono']
+            modelo = data['modelo']
+            modulo = data['modulo']
 
             #aqui se carga el modelo, se establece si usar cpu o mps, se establece el modelo y sus clases
-            model, classes, device = load_model(id_modelo)
+            model, classes, device = load_model( modelo,id_modelo)
 
             #aqui se procesa la imagen y se formatea el nombre para evitar errores
             file_name = process_image(url_image)
@@ -34,6 +37,7 @@ class ModeloYoloNas:
             # ok funciona
             # este es el profeta, y realiza las predicciones
             prediction = PredictionService.prediccion(image,model,device)
+            return prediction
             # ok funciona
 
             # Mostrar detalle de la predicción
@@ -44,11 +48,16 @@ class ModeloYoloNas:
 
             # Añadimos imageId a cada registro en detalle_prediccion
             veredictos, resultados = VeredictoService.jsonVeredict(detalle_prediccion,imageId,id_modelo,etiquetas,imageUrl,telefono)
-            
+
+            # if(modulo > 1):
+            #     ModeloYoloNas.competition(modelo,file_name)
+            #     # this.competition()
+
+
             # En caso de que no llogue ningûn veredicto
             if len(veredictos) == 0:
                 return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
-            
+
             return JSONResponse(resultados)
         except KeyError as e:
             return send_errors(str(e),500, 'yolo_nas', 18)
@@ -56,6 +65,7 @@ class ModeloYoloNas:
     #MODULO DE TEST Y AMBIENTE QA
     async def AnalyzeModel_test(self,request: Request):
         try:
+            return 'hola'
             global model, device
 
             data = await request.json()
@@ -87,13 +97,71 @@ class ModeloYoloNas:
 
             # Añadimos imageId a cada registro en detalle_prediccion
             veredictos, resultados = VeredictoService.jsonVeredict(detalle_prediccion,imageId,id_modelo,etiquetas,imageUrl,telefono)
-            
+
             # En caso de que no llogue ningûn veredicto
             if len(veredictos) == 0:
                 return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
-            
+
             return JSONResponse(resultados)
 
         except KeyError as e:
             send_errors(str(e),500, 'yolo_nas_test', 18)
             return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
+
+
+
+    '''
+    modelo = nombre de modelo 
+    file_name = ruta de imagen descargada 
+    '''
+    async def competition(modelo,file_name): ## CONCURRENCIA EN LA COMPETENCIA
+        try:
+            global model, device
+
+            # data = await request.json()
+
+            # extrayendo data del JSON
+            # id_modelo = data['id_modelo']
+            # url_image = data['url_image']
+            # etiquetas = data['etiquetas']
+            # imageUrl = data['url_image']
+            # imageId = data['id_image']
+            # telefono = data['telefono']
+            # modelo = data['modelo']
+            # modulo = data['modulo']
+
+            #aqui se carga el modelo, se establece si usar cpu o mps, se establece el modelo y sus clases
+            model, classes, device = load_model(modelo)
+
+            #aqui se procesa la imagen y se formatea el nombre para evitar errores
+            # file_name = process_image(url_image)
+
+            #aqui se carga la imagen para ser utilizada por el profeta
+            image = cargar_image(file_name)
+
+            # ok funciona
+            # este es el profeta, y realiza las predicciones
+            prediction = PredictionService.prediccion(image,model,device)
+            return prediction
+            # ok funciona
+
+            # Mostrar detalle de la predicción
+            df_prediccion = PredictionService.total_image(prediction)
+
+            # Convertimos el DataFrame df_prediccion a una lista de diccionarios
+            detalle_prediccion = df_prediccion.to_dict(orient="records")
+
+            # Añadimos imageId a cada registro en detalle_prediccion
+            veredictos, resultados = VeredictoService.jsonVeredict(detalle_prediccion,imageId,id_modelo,etiquetas,imageUrl,telefono)
+
+            # if(modulo > 1):
+
+
+
+                # En caso de que no llogue ningûn veredicto
+            if len(veredictos) == 0:
+                return JSONResponse({"imageId": imageId, "telefono": telefono, "url_image":imageUrl})
+
+            return JSONResponse(resultados)
+        except KeyError as e:
+            return send_errors(str(e),500, 'yolo_nas', 18)

@@ -44,3 +44,10 @@ class PredictionService:
             return pd.DataFrame(data)
         except KeyError as e:
             return send_errors(str(e),500, 'prediction_service', 18)
+
+
+    def total_image(outputs):
+        try:
+            return outputs
+        except KeyError as e:
+            return send_errors(str(e),500, 'prediction_service', 18)
