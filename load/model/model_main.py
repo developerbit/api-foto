@@ -14,13 +14,14 @@ class ModeloMain:
             # id_modelo = int(data['id_modelo'])
             # modulo = int(data['modulo'])
             # return id_modelo
-            modelsFolder = get_enviroment('FOLDER_MODEL');
+            modelsFolder = get_enviroment('FOLDER_MODEL')
             modelRoute = data['empresa_id_celuweb']
             modelos =  data['modelos']
             inferencias = []
             counter = 0
             for m in modelos:
-                inferencia =  await ModeloYoloV8().AnalyzeModel(request, m, empresa)
+                #inferencia =  await ModeloYoloV8().AnalyzeModel(request, m, empresa)
+                inferencia = await ModeloYoloV8().AnalyzeModel(data, m, empresa)
                 counter += 1
                 inferencias.append({counter: inferencia})
                 # return i 

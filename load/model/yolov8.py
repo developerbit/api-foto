@@ -13,9 +13,10 @@ class ModeloYoloV8:
         self.model_service = ModelService()
         self.image_service = ImageService()
 
-    async def AnalyzeModel(self, request: Request, model, enterprise):
+    #async def AnalyzeModel(self, request: Request, model, enterprise):
+    async def AnalyzeModel(self, data: dict, model, enterprise):
         try:
-            data = await request.json()
+            #data = await request.json()
             # return data
             modulo = data['modulo']
             model = self.model_service.load_model(model, enterprise)

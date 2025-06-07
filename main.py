@@ -1,6 +1,8 @@
 from fastapi import FastAPI
+from load.url import configure_routes  # 👈 IMPORTANTE
 
 app = FastAPI()
+configure_routes(app)  #REGISTRA LAS RUTAS DEL PROYECTO
 
 @app.get("/")
 def read_root():
