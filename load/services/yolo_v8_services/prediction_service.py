@@ -10,7 +10,10 @@ class PredictionService:
             print("Resultados brutos del modelo:", results)  
             predictions = []
             for result in results:
+                print('result 1',result)
+                print('result 2',result.boxes)
                 for box in result.boxes:
+                    print('box',box)
                     prediction = {
                             "class_id": int(box.cls),
                             "class_name": result.names[int(box.cls)],
